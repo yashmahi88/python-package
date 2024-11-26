@@ -95,7 +95,10 @@ jobs:
                 echo "Error: Unsupported LANGUAGE specified."
                 exit 1
               fi
-    
+      - name: List workspace contents
+        run: |
+            echo "Checking workspace directory contents:"
+            ls -R
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
