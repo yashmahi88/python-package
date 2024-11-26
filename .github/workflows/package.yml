@@ -21,21 +21,21 @@ jobs:
         with:
           name: build-artifact
 
-      - name: Build project
-        run: |
-            if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
-              dotnet build --configuration Release
-            elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
-               mvn clean package \
-                -Dpackage.id=${{ env.PACKAGE_ID }} \
-                -Dpackage.version=${{ env.PACKAGE_VERSION }}
-            elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
-              python setup.py install
-            elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
-              gradle build
-            elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
-              npm run build
-            fi
+    #   - name: Build project
+    #     run: |
+    #         if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
+    #           dotnet build --configuration Release
+    #         elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
+    #            mvn clean package \
+    #             -Dpackage.id=${{ env.PACKAGE_ID }} \
+    #             -Dpackage.version=${{ env.PACKAGE_VERSION }}
+    #         elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
+    #           python setup.py install
+    #         elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
+    #           gradle build
+    #         elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
+    #           npm run build
+    #         fi
       - name: Pack project
         run: |
           echo "Packaging with version: $PACKAGE_VERSION"
@@ -56,10 +56,7 @@ jobs:
             ARTIFACT_PATH="./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
           fi
           echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
-      - name: List workspace contents
-        run: |
-            echo "Checking workspace directory contents:"
-            ls -R
+
    
       - name: Upload Package as Artifact
         uses: actions/upload-artifact@v3

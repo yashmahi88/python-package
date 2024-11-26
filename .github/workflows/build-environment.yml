@@ -78,6 +78,21 @@ jobs:
             echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
   
 
+      - name: Build project
+        run: |
+                if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
+                  dotnet build --configuration Release
+                elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
+                   mvn clean package \
+                    -Dpackage.id=${{ env.PACKAGE_ID }} \
+                    -Dpackage.version=${{ env.PACKAGE_VERSION }}
+                elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
+                  python setup.py install
+                elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
+                  gradle build
+                elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
+                  npm run build
+                fi
       - name: Determine build path
         id: determine_path
         run: |
@@ -99,6 +114,7 @@ jobs:
         run: |
             echo "Checking workspace directory contents:"
             ls -R
+     
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
