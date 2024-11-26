@@ -16,10 +16,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2  
   
-      - name: Retrieve Package ID and Version from Publish Package
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifact
+          path: ./downloaded-artifacts
+
+      - name: Extract PACKAGE_ID and PACKAGE_VERSION
         run: |
-          PACKAGE_ID="${{ needs.publish_package.outputs.package_id }}"
-          PACKAGE_VERSION="${{ needs.publish_package.outputs.package_version }}  
+          # Read the package_info.txt file to extract PACKAGE_ID and PACKAGE_VERSION
+          PACKAGE_ID=$(grep "Package ID:" ./downloaded-artifacts/build/package_info.txt | cut -d ':' -f2 | xargs)
+          PACKAGE_VERSION=$(grep "Package Version:" ./downloaded-artifacts/build/package_info.txt | cut -d ':' -f2 | xargs)
+
+          echo "PACKAGE_ID=${PACKAGE_ID}"
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
+
+          # Optionally set them as environment variables for further steps
+          echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
 
       - name: Pack project
         run: |
