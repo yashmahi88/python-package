@@ -99,7 +99,7 @@ jobs:
               if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
                 echo "ARTIFACT_PATH=./bin/Release/" >> $GITHUB_ENV
               elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
-                echo "ARTIFACT_PATH=./target/" >> $GITHUB_ENV
+                echo "ARTIFACT_PATH=./target/*.jar" >> $GITHUB_ENV
               elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
                 echo "ARTIFACT_PATH=./dist/" >> $GITHUB_ENV
               elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
