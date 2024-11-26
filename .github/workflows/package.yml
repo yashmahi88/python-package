@@ -1,12 +1,11 @@
 name: Package and Upload
 
 on:
-  workflow_call:
-    inputs:
-      LANGUAGE:
-        description: "Programming Language to Package"
-        required: true
-        type: string
+  workflow_run:
+    workflows:
+      - Setup and Build Package
+    types:
+      - completed
 
 jobs:
   package:
@@ -16,7 +15,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2  
 
-      - name: Set package name and version 
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build-artifact
+
+      - name: Set package name and version
         id: set_name
         run: |
           echo "Checking GITHUB_REF: $GITHUB_REF"

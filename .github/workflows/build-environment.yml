@@ -27,9 +27,9 @@ jobs:
             sudo apt-get install -y dotnet-sdk-8.0
           elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
             echo "Setting up Java"
-            sudo apt-get install -y openjdk-11-jdk maven
+            sudo apt-get install -y openjdk-11-jdk 
           elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
-            echo "Setting up Python"
+            echo "Setting up Python" 
             sudo apt-get install -y python3-pip
           elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
             echo "Setting up Kotlin"
@@ -46,35 +46,6 @@ jobs:
             exit 1
           fi
 
-      - name: Set package name and version
-        id: set_package
-        run: |
-          PACKAGE_ID="example-package"
-          PACKAGE_VERSION="1.0.${{ github.run_id }}"
-          echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
-          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
-
-      - name: Update POM file with package details (for Java)
-        if: inputs.LANGUAGE == 'java'
-        run: |
-          sed -i "s|\${PACKAGE_ID}|${{ env.PACKAGE_ID }}|g" pom.xml
-          sed -i "s|\${PACKAGE_VERSION}|${{ env.PACKAGE_VERSION }}|g" pom.xml
-          echo "Updated POM file with PACKAGE_ID=${{ env.PACKAGE_ID }} and PACKAGE_VERSION=${{ env.PACKAGE_VERSION }}"
-
-      - name: Restore dependencies (if applicable)
-        run: |
-          if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
-            dotnet restore
-          elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
-            mvn clean install
-          elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
-            pip install -r requirements.txt
-          elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
-            gradle build
-          elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
-            npm install
-          fi
-
       - name: Build project
         run: |
           if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
@@ -88,3 +59,9 @@ jobs:
           elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
             npm run build
           fi
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: ./build/  
