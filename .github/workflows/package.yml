@@ -25,6 +25,7 @@ jobs:
         run: |
             echo "Listing contents of downloaded artifacts:"
             ls -R ./downloaded-artifacts
+            cat  ./downloaded-artifacts/build/package_info.txt
 
       - name: Extract PACKAGE_ID and PACKAGE_VERSION
         run: |
