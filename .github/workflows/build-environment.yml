@@ -98,8 +98,8 @@ jobs:
       - name: Create a package
         run: |
           mkdir -p build
-          echo "Package ID: $PACKAGE_ID" > build/package_info.txt
-          echo "Package Version: $PACKAGE_VERSION" >> build/package_info.txt
+          echo "PACKAGE_ID: $PACKAGE_ID" > build/package_info.txt
+          echo "PACKAGE_VERSION: $PACKAGE_VERSION" >> build/package_info.txt
           # Add other commands to create the actual package, if applicable.
 
       - name: Upload artifact
