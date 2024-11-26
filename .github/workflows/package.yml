@@ -16,73 +16,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2  
 
-      - name: Set package name and version
-        id: set_name
+      - name: Determine artifact path based on language
         run: |
-            echo "Checking GITHUB_REF: $GITHUB_REF"
-            FOLDER_NAME="nexus-git-development"
-  
-            if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-              TAG_NAME="${GITHUB_REF#refs/tags/}"
-              git fetch origin master
-              MASTER_COMMIT=$(git rev-parse origin/master)
-              TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
-              if [[ "$TAG_COMMIT" == "$MASTER_COMMIT" ]]; then
-                export PACKAGE_ID="nexus-git-${TAG_NAME}"
-                export PACKAGE_VERSION="${TAG_NAME}"
-              else
-                echo "Error: Tags must be created on the master branch."
-                exit 1
-              fi
-            elif [[ "${GITHUB_REF}" == "refs/heads/development" ]]; then
-              export PACKAGE_ID="${FOLDER_NAME}.nexus-git"
-              export PACKAGE_VERSION="1.0.0-${GITHUB_RUN_ID}"
-            elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
-              COMMIT_ID=$(echo "${GITHUB_SHA}" | cut -c1-6)
-              export PACKAGE_ID="nexus-git-1.0.0-release-${COMMIT_ID}"
-              export PACKAGE_VERSION="1.0.0-release-${COMMIT_ID}"
-            elif [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
-              exit 1
-            fi 
-  
-            echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
-            echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
-
-      - name: Pack project
-        run: |
-          echo "Packaging with version: $PACKAGE_VERSION"
+          echo "Determining artifact path based on language: ${{ inputs.LANGUAGE }}"
           if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
-            dotnet pack --configuration Release --output ./bin/Release /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=$PACKAGE_VERSION
             ARTIFACT_PATH="./bin/Release/${PACKAGE_ID}.${PACKAGE_VERSION}.nupkg"
           elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
-            mvn package
             ARTIFACT_PATH="./target/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
           elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
-            python setup.py sdist
             ARTIFACT_PATH="./dist/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
           elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
-            gradle build
             ARTIFACT_PATH="./build/libs/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
           elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
-            npm run build
             ARTIFACT_PATH="./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
           fi
+
+          echo "Using artifact path: $ARTIFACT_PATH"
           echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
+
+      - name: Skip build if artifact exists (for Java)
+        if: ${{ inputs.LANGUAGE == 'java' && steps.check_artifact.outputs.artifact_exists != 'true' }}
+        run: |
+          echo "Artifact not found for Java. Proceeding with build."
+          mvn package \
+            -Dpackage.id=${{ env.PACKAGE_ID }} \
+            -Dpackage.version=${{ env.PACKAGE_VERSION }}
 
       - name: Upload Package as Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: package-artifact
+          name: nuget-package
           path: ${{ env.ARTIFACT_PATH }}
-
-      - name: Download Package Artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: package-artifact
-          path: ./downloaded-artifacts
-
-      - name: Use Artifact
-        run: |
-          echo "Using downloaded artifact from ./downloaded-artifacts"
-          # Example: Check the contents of the downloaded artifact
-          ls ./downloaded-artifacts
