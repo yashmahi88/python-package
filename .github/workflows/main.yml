@@ -1,0 +1,135 @@
+name: Publish Package
+
+on:
+  workflow_call:
+    inputs:
+      LANGUAGE:
+        description: "Programming Language to Package"
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2  
+
+      - name: Set up environment based on LANGUAGE
+        id: setup_language
+        run: |
+          echo "LANGUAGE=${{ inputs.LANGUAGE }}"
+          echo "Setting up environment for $LANGUAGE"
+
+          # Conditionally set up based on language
+          if [[ "$LANGUAGE" == "dotnet" ]]; then
+            echo "Setting up .NET"
+            sudo apt-get install -y dotnet-sdk-8.0
+          elif [[ "$LANGUAGE" == "java" ]]; then
+            echo "Setting up Java"
+            sudo apt-get install -y openjdk-11-jdk
+          elif [[ "$LANGUAGE" == "python" ]]; then
+            echo "Setting up Python"
+            sudo apt-get install -y python3-pip
+          elif [[ "$LANGUAGE" == "kotlin" ]]; then
+            echo "Setting up Kotlin"
+            sudo apt-get install -y openjdk-11-jdk
+            curl -s https://get.sdkman.io | bash
+            source "$HOME/.sdkman/bin/sdkman-init.sh"
+            sdk install kotlin
+          elif [[ "$LANGUAGE" == "react" || "$LANGUAGE" == "javascript" ]]; then
+            echo "Setting up Node.js"
+            curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+          else
+            echo "Language not supported!"
+            exit 1
+          fi
+
+      - name: Restore dependencies (if applicable)
+        run: |
+          if [[ "$LANGUAGE" == "dotnet" ]]; then
+            dotnet restore
+          elif [[ "$LANGUAGE" == "java" ]]; then
+            mvn clean install
+          elif [[ "$LANGUAGE" == "python" ]]; then
+            pip install -r requirements.txt
+          elif [[ "$LANGUAGE" == "kotlin" ]]; then
+            gradle build
+          elif [[ "$LANGUAGE" == "react" || "$LANGUAGE" == "javascript" ]]; then
+            npm install
+          fi
+
+      - name: Build project
+        run: |
+          if [[ "$LANGUAGE" == "dotnet" ]]; then
+            dotnet build --configuration Release
+          elif [[ "$LANGUAGE" == "java" ]]; then
+            mvn clean package
+          elif [[ "$LANGUAGE" == "python" ]]; then
+            python setup.py install
+          elif [[ "$LANGUAGE" == "kotlin" ]]; then
+            gradle build
+          elif [[ "$LANGUAGE" == "react" || "$LANGUAGE" == "javascript" ]]; then
+            npm run build
+          fi
+
+      - name: Set package name and version 
+        id: set_name
+        run: |
+          echo "Checking GITHUB_REF: $GITHUB_REF"
+          FOLDER_NAME="nexus-git-development"
+
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG_NAME="${GITHUB_REF#refs/tags/}"
+            git fetch origin master
+            MASTER_COMMIT=$(git rev-parse origin/master)
+            TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
+            if [[ "$TAG_COMMIT" == "$MASTER_COMMIT" ]]; then
+              export PACKAGE_ID="nexus-git-${TAG_NAME}"
+              export PACKAGE_VERSION="${TAG_NAME}"
+            else
+              echo "Error: Tags must be created on the master branch."
+              exit 1
+            fi
+          elif [[ "${GITHUB_REF}" == "refs/heads/development" ]]; then
+            export PACKAGE_ID="${FOLDER_NAME}.nexus-git"
+            export PACKAGE_VERSION="1.0.0-${GITHUB_RUN_ID}"
+          elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
+            COMMIT_ID=$(echo "${GITHUB_SHA}" | cut -c1-6)
+            export PACKAGE_ID="nexus-git-1.0.0-release-${COMMIT_ID}"
+            export PACKAGE_VERSION="1.0.0-release-${COMMIT_ID}"
+          elif [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
+            exit 1
+          fi 
+
+          echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
+
+      - name: Pack project
+        run: |
+          echo "Packaging with version: $PACKAGE_VERSION"
+          if [[ "$LANGUAGE" == "dotnet" ]]; then
+            dotnet pack --configuration Release --output ./bin/Release /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=$PACKAGE_VERSION
+            ARTIFACT_PATH="./bin/Release/${PACKAGE_ID}.${PACKAGE_VERSION}.nupkg"
+          elif [[ "$LANGUAGE" == "java" ]]; then
+            mvn package
+            ARTIFACT_PATH="./target/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
+          elif [[ "$LANGUAGE" == "python" ]]; then
+            python setup.py sdist
+            ARTIFACT_PATH="./dist/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
+          elif [[ "$LANGUAGE" == "kotlin" ]]; then
+            gradle build
+            ARTIFACT_PATH="./build/libs/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
+          elif [[ "$LANGUAGE" == "react" || "$LANGUAGE" == "javascript" ]]; then
+            npm run build
+            ARTIFACT_PATH="./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
+          fi
+          echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
+
+      - name: Upload Package as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: nuget-package
+          path: ${{ env.ARTIFACT_PATH }}
