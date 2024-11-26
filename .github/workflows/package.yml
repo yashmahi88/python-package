@@ -56,7 +56,11 @@ jobs:
             ARTIFACT_PATH="./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
           fi
           echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
-
+      - name: List workspace contents
+        run: |
+            echo "Checking workspace directory contents:"
+            ls -R
+   
       - name: Upload Package as Artifact
         uses: actions/upload-artifact@v3
         with:
