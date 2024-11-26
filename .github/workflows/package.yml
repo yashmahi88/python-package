@@ -21,6 +21,10 @@ jobs:
         with:
           name: build-artifact
           path: ./downloaded-artifacts
+      - name: Verify contents of downloaded artifact
+        run: |
+            echo "Listing contents of downloaded artifacts:"
+            ls -R ./downloaded-artifacts
 
       - name: Extract PACKAGE_ID and PACKAGE_VERSION
         run: |
