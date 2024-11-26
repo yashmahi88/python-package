@@ -1,19 +1,18 @@
-name: Main Workflow
+name: Call Package Workflows
 
 on:
   push:
     branches:
       - development
-      - release
-    tags:
-      - '*'
 
 jobs:
-  call_publish_package:
-    uses: yashmahi88/python-package/.github/workflows/main.yml@development
+  call_setup_and_build:
+    uses: yashmahi88/python-package/.github/workflows/build-environment.yml@development
     with:
-        LANGUAGE: ${{ vars.LANGUAGE}}
-    #   project_key: ${{ vars.PROJECT_KEY }}
-    #   project_name: ${{ vars.PROJECT_NAME }}
-    # secrets: inherit
- 
+      LANGUAGE: ${{ vars.LANGUAGE }}  
+
+  call_package_and_upload:
+    needs: call_setup_and_build
+    uses: yashmahi88/python-package/.github/workflows/package.yml@development
+    with:
+      LANGUAGE: ${{ vars.LANGUAGE }}  
