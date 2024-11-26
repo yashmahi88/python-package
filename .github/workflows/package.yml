@@ -29,16 +29,16 @@ jobs:
 
       - name: Extract PACKAGE_ID and PACKAGE_VERSION
         run: |
-          # Read the package_info.txt file to extract PACKAGE_ID and PACKAGE_VERSION
-          PACKAGE_ID=$(grep "Package ID:" ./downloaded-artifacts/package_info.txt | cut -d ':' -f2 | xargs)
-          PACKAGE_VERSION=$(grep "Package Version:" ./downloaded-artifacts/package_info.txt | cut -d ':' -f2 | xargs)
-
-          echo "PACKAGE_ID=${PACKAGE_ID}"
-          echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
-
-          # Optionally set them as environment variables for further steps
-          echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
-          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
+              # Correct patterns to match the actual file content
+              PACKAGE_ID=$(grep "PACKAGE_ID:" ./downloaded-artifacts/package_info.txt | cut -d ':' -f2 | xargs)
+              PACKAGE_VERSION=$(grep "PACKAGE_VERSION:" ./downloaded-artifacts/package_info.txt | cut -d ':' -f2 | xargs)
+    
+              echo "PACKAGE_ID=${PACKAGE_ID}"
+              echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
+    
+              # Optionally set them as environment variables for further steps
+              echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
+              echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
 
       - name: Pack project
         run: |
