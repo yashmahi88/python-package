@@ -16,3 +16,4 @@ jobs:
     #   project_key: ${{ vars.PROJECT_KEY }}
     #   project_name: ${{ vars.PROJECT_NAME }}
     # secrets: inherit
+ 

@@ -30,7 +30,7 @@ jobs:
             echo "Setting up Java"
             sudo apt-get install -y openjdk-11-jdk 
           elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
-            echo "Setting up Python"
+            echo "Setting up Python" 
             sudo apt-get install -y python3-pip
           elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
             echo "Setting up Kotlin"
