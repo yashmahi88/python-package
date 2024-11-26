@@ -25,13 +25,13 @@ jobs:
         run: |
             echo "Listing contents of downloaded artifacts:"
             ls -R ./downloaded-artifacts
-            cat  ./downloaded-artifacts/build/package_info.txt
+            cat  ./downloaded-artifacts/package_info.txt
 
       - name: Extract PACKAGE_ID and PACKAGE_VERSION
         run: |
           # Read the package_info.txt file to extract PACKAGE_ID and PACKAGE_VERSION
-          PACKAGE_ID=$(grep "Package ID:" ./downloaded-artifacts/build/package_info.txt | cut -d ':' -f2 | xargs)
-          PACKAGE_VERSION=$(grep "Package Version:" ./downloaded-artifacts/build/package_info.txt | cut -d ':' -f2 | xargs)
+          PACKAGE_ID=$(grep "Package ID:" ./downloaded-artifacts/package_info.txt | cut -d ':' -f2 | xargs)
+          PACKAGE_VERSION=$(grep "Package Version:" ./downloaded-artifacts/package_info.txt | cut -d ':' -f2 | xargs)
 
           echo "PACKAGE_ID=${PACKAGE_ID}"
           echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
