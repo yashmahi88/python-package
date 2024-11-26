@@ -1,11 +1,12 @@
 name: Package and Upload
 
 on:
-  workflow_run:
-    workflows:
-      - Setup and Build Package
-    types:
-      - completed
+    workflow_call:
+      inputs:
+        LANGUAGE:
+          description: "Programming Language to Package"
+          required: true
+          type: string
 
 jobs:
   package:
