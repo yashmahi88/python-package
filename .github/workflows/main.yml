@@ -28,7 +28,7 @@ jobs:
             sudo apt-get install -y dotnet-sdk-8.0
           elif [[ "$LANGUAGE" == "java" ]]; then
             echo "Setting up Java"
-            sudo apt-get install -y openjdk-11-jdk
+            sudo apt-get install -y openjdk-11-jdk 
           elif [[ "$LANGUAGE" == "python" ]]; then
             echo "Setting up Python"
             sudo apt-get install -y python3-pip
