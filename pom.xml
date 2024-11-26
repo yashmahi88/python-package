@@ -4,12 +4,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>${env.PACKAGE_ID}</artifactId> <!-- Fetching PACKAGE_ID -->
-    <version>${env.PACKAGE_VERSION}</version> <!-- Fetching PACKAGE_VERSION -->
+    <artifactId>${package.id}</artifactId>
+    <version>${package.version}</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <package.id>${PACKAGE_ID}</package.id>
+        <package.version>${PACKAGE_VERSION}</package.version>
     </properties>
 
     <dependencies>
