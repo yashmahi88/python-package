@@ -1,12 +1,12 @@
 name: Package and Upload
 
 on:
-  workflow_call:
-    inputs:
-      LANGUAGE:
-        description: "Programming Language to Package"
-        required: true
-        type: string
+    workflow_call:
+      inputs:
+        LANGUAGE:
+          description: "Programming Language to Package"
+          required: true
+          type: string
 
 jobs:
   package:
@@ -15,33 +15,37 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2  
-
-      - name: Determine artifact path based on language
+  
+      - name: Retrieve Package ID and Version from Publish Package
         run: |
-          echo "Determining artifact path based on language: ${{ inputs.LANGUAGE }}"
+          PACKAGE_ID="${{ needs.publish_package.outputs.package_id }}"
+          PACKAGE_VERSION="${{ needs.publish_package.outputs.package_version }}  
+
+      - name: Pack project
+        run: |
+          echo "Packaging with version: $PACKAGE_VERSION"
           if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
+            dotnet pack --configuration Release --output ./bin/Release /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=$PACKAGE_VERSION
             ARTIFACT_PATH="./bin/Release/${PACKAGE_ID}.${PACKAGE_VERSION}.nupkg"
           elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
+            mvn package \
+              -Dpackage.id=${{ env.PACKAGE_ID }} \
+              -Dpackage.version=${{ env.PACKAGE_VERSION }}
+
             ARTIFACT_PATH="./target/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
           elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
+            python setup.py sdist
             ARTIFACT_PATH="./dist/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
           elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
+            gradle build
             ARTIFACT_PATH="./build/libs/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
           elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
+            npm run build
             ARTIFACT_PATH="./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
           fi
-
-          echo "Using artifact path: $ARTIFACT_PATH"
           echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
 
-      - name: Skip build if artifact exists (for Java)
-        if: ${{ inputs.LANGUAGE == 'java' && steps.check_artifact.outputs.artifact_exists != 'true' }}
-        run: |
-          echo "Artifact not found for Java. Proceeding with build."
-          mvn package \
-            -Dpackage.id=${{ env.PACKAGE_ID }} \
-            -Dpackage.version=${{ env.PACKAGE_VERSION }}
-
+   
       - name: Upload Package as Artifact
         uses: actions/upload-artifact@v3
         with:
