@@ -51,7 +51,9 @@ jobs:
           if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
             dotnet build --configuration Release
           elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
-            mvn clean package
+             mvn clean package \
+              -Dpackage.id=${{ env.PACKAGE_ID }} \
+              -Dpackage.version=${{ env.PACKAGE_VERSION }}
           elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
             python setup.py install
           elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
