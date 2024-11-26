@@ -27,7 +27,7 @@ jobs:
             sudo apt-get install -y dotnet-sdk-8.0
           elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
             echo "Setting up Java"
-            sudo apt-get install -y openjdk-11-jdk 
+            sudo apt-get install -y openjdk-11-jdk maven
           elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
             echo "Setting up Python" 
             sudo apt-get install -y python3-pip
@@ -45,79 +45,25 @@ jobs:
             echo "Language not supported!"
             exit 1
           fi
-      - name: Set package name and version
-        id: set_name
-        run: |
-            echo "Checking GITHUB_REF: $GITHUB_REF"
-            FOLDER_NAME="nexus-git-development"
-  
-            if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-              TAG_NAME="${GITHUB_REF#refs/tags/}"
-              git fetch origin master
-              MASTER_COMMIT=$(git rev-parse origin/master)
-              TAG_COMMIT=$(git rev-parse "${GITHUB_REF}")
-              if [[ "$TAG_COMMIT" == "$MASTER_COMMIT" ]]; then
-                export PACKAGE_ID="nexus-git-${TAG_NAME}"
-                export PACKAGE_VERSION="${TAG_NAME}"
-              else
-                echo "Error: Tags must be created on the master branch."
-                exit 1
-              fi
-            elif [[ "${GITHUB_REF}" == "refs/heads/development" ]]; then
-              export PACKAGE_ID="${FOLDER_NAME}.nexus-git"
-              export PACKAGE_VERSION="1.0.0-${GITHUB_RUN_ID}"
-            elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
-              COMMIT_ID=$(echo "${GITHUB_SHA}" | cut -c1-6)
-              export PACKAGE_ID="nexus-git-1.0.0-release-${COMMIT_ID}"
-              export PACKAGE_VERSION="1.0.0-release-${COMMIT_ID}"
-            elif [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
-              exit 1
-            fi 
-  
-            echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
-            echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
-  
 
       - name: Build project
         run: |
-                if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
-                  dotnet build --configuration Release
-                elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
-                   mvn clean package \
-                    -Dpackage.id=${{ env.PACKAGE_ID }} \
-                    -Dpackage.version=${{ env.PACKAGE_VERSION }}
-                elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
-                  python setup.py install
-                elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
-                  gradle build
-                elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
-                  npm run build
-                fi
-      - name: Determine build path
-        id: determine_path
-        run: |
-              if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
-                echo "ARTIFACT_PATH=./bin/Release/" >> $GITHUB_ENV
-              elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
-                echo "ARTIFACT_PATH=./target/*.jar" >> $GITHUB_ENV
-              elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
-                echo "ARTIFACT_PATH=./dist/" >> $GITHUB_ENV
-              elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
-                echo "ARTIFACT_PATH=./build/libs/" >> $GITHUB_ENV
-              elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
-                echo "ARTIFACT_PATH=./build/" >> $GITHUB_ENV
-              else
-                echo "Error: Unsupported LANGUAGE specified."
-                exit 1
-              fi
-      - name: List workspace contents
-        run: |
-            echo "Checking workspace directory contents:"
-            ls -R
-     
+            mkdir -p build-output
+            if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
+              dotnet build --configuration Release -o build-output
+            elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
+              mvn clean package -DskipTests -DoutputDirectory=build-output
+            elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
+              python setup.py install --prefix build-output
+            elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
+              gradle build -x test -DbuildDir=build-output
+            elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
+              npm install
+              npm run build --prefix build-output
+            fi
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
-            name: build-artifact
-            path: ${{ env.ARTIFACT_PATH }}
-    
+          name: build-artifact
+          path: build-output/
