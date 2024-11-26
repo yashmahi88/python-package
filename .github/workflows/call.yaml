@@ -10,7 +10,7 @@ on:
 
 jobs:
   call_publish_package:
-    uses: yashmahi88/python-package/.github/workflows/main.yml@master
+    uses: yashmahi88/python-package/.github/workflows/main.yml@development
     with:
         LANGUAGE: ${{ vars.LANGUAGE}}
     #   project_key: ${{ vars.PROJECT_KEY }}
