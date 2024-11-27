@@ -28,15 +28,6 @@ jobs:
           elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
             echo "Setting up Java"
             sudo apt-get install -y openjdk-11-jdk 
-          elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
-            echo "Setting up Python" 
-            sudo apt-get install -y python3-pip
-          elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
-            echo "Setting up Kotlin"
-            sudo apt-get install -y openjdk-11-jdk
-            curl -s https://get.sdkman.io | bash
-            source "$HOME/.sdkman/bin/sdkman-init.sh"
-            sdk install kotlin
           elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "node" ]]; then
             echo "Setting up Node.js"
             curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
@@ -82,15 +73,13 @@ jobs:
             if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
               dotnet build --configuration Release
             elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
-               mvn clean package \
-                -Dpackage.id=${{ env.PACKAGE_ID }} \
-                -Dpackage.version=${{ env.PACKAGE_VERSION }}
-            elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
-              python setup.py install
-            elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
-              gradle build
+            #    mvn clean package \
+            #     -Dpackage.id=${{ env.PACKAGE_ID }} \
+            #     -Dpackage.version=${{ env.PACKAGE_VERSION }}
+              echo "Skipping build "
             elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "node" ]]; then
-              npm run build
+              # npm run build
+              echo "Skipping build "
             fi
 
 

@@ -52,12 +52,6 @@ jobs:
               -Dpackage.version=${{ env.PACKAGE_VERSION }}
 
             ARTIFACT_PATH="./target/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
-          elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
-            python setup.py sdist
-            ARTIFACT_PATH="./dist/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
-          elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
-            gradle build
-            ARTIFACT_PATH="./build/libs/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
           elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "node" ]]; then
             node -e "
             const fs = require('fs');
