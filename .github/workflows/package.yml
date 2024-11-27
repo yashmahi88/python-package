@@ -52,7 +52,7 @@ jobs:
               -Dpackage.version=${{ env.PACKAGE_VERSION }}
 
             ARTIFACT_PATH="./target/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
-          elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "node" ]]; then
+          elif [[ "${{ inputs.LANGUAGE }}" == "react" ]]; then
             node -e "
             const fs = require('fs');
             const path = require('path');
@@ -73,8 +73,12 @@ jobs:
             cp -r build/* temp_build_dir/
             tar --ignore-failed-read -czvf "./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz" -C temp_build_dir .
             ARTIFACT_PATH="./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
+          elif [[ "${{ inputs.LANGUAGE }}" == "node" ]]; then
+            npm pack
+            ARTIFACT_PATH="./${PACKAGE_ID}-${PACKAGE_VERSION}.tgz"
           fi
           echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
+          
 
    
       - name: Upload Package as Artifact
