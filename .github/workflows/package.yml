@@ -70,7 +70,7 @@ jobs:
             sync
             sleep 10
             mkdir -p temp_build_dir
-            cp -r build/* temp_build_dir/
+            #cp -r build/* temp_build_dir/
             tar --ignore-failed-read -czvf "./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz" -C temp_build_dir .
             ARTIFACT_PATH="./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
           fi
