@@ -1,12 +1,12 @@
 name: Package and Upload
 
 on:
-  workflow_call:
-    inputs:
-      LANGUAGE:
-        description: "Programming Language to Package"
-        required: true
-        type: string
+    workflow_call:
+      inputs:
+        LANGUAGE:
+          description: "Programming Language to Package"
+          required: true
+          type: string
 
 jobs:
   package:
@@ -15,72 +15,72 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2  
-
+  
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
           name: build-artifact
           path: ./downloaded-artifacts
-
       - name: Verify contents of downloaded artifact
         run: |
-          echo "Listing contents of downloaded artifacts:"
-          ls -R ./downloaded-artifacts
-          cat ./downloaded-artifacts/package_info.txt
+            echo "Listing contents of downloaded artifacts:"
+            ls -R ./downloaded-artifacts
+            cat  ./downloaded-artifacts/package_info.txt
 
       - name: Extract PACKAGE_ID and PACKAGE_VERSION
         run: |
-          PACKAGE_ID=$(grep "Package ID:" ./downloaded-artifacts/package_info.txt | cut -d ':' -f2 | xargs)
-          PACKAGE_VERSION=$(grep "Package Version:" ./downloaded-artifacts/package_info.txt | cut -d ':' -f2 | xargs)
-
-          echo "PACKAGE_ID=${PACKAGE_ID}"
-          echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
-
-          echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
-          echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
+              
+              PACKAGE_ID=$(grep "PACKAGE_ID:" ./downloaded-artifacts/package_info.txt | cut -d ':' -f2 | xargs)
+              PACKAGE_VERSION=$(grep "PACKAGE_VERSION:" ./downloaded-artifacts/package_info.txt | cut -d ':' -f2 | xargs)
+    
+              echo "PACKAGE_ID=${PACKAGE_ID}"
+              echo "PACKAGE_VERSION=${PACKAGE_VERSION}"
+    
+              
+              echo "PACKAGE_ID=${PACKAGE_ID}" >> $GITHUB_ENV
+              echo "PACKAGE_VERSION=${PACKAGE_VERSION}" >> $GITHUB_ENV
 
       - name: Pack project
         run: |
           echo "Packaging with version: $PACKAGE_VERSION"
-          
           if [[ "${{ inputs.LANGUAGE }}" == "dotnet" ]]; then
             dotnet pack --configuration Release --output ./bin/Release /p:CustomPackageId=$PACKAGE_ID /p:PackageVersion=$PACKAGE_VERSION
             ARTIFACT_PATH="./bin/Release/${PACKAGE_ID}.${PACKAGE_VERSION}.nupkg"
-
           elif [[ "${{ inputs.LANGUAGE }}" == "java" ]]; then
-            mvn package -Dpackage.id=${{ env.PACKAGE_ID }} -Dpackage.version=${{ env.PACKAGE_VERSION }}
-            ARTIFACT_PATH="./target/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
+            mvn package \
+              -Dpackage.id=${{ env.PACKAGE_ID }} \
+              -Dpackage.version=${{ env.PACKAGE_VERSION }}
 
+            ARTIFACT_PATH="./target/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
           elif [[ "${{ inputs.LANGUAGE }}" == "python" ]]; then
             python setup.py sdist
             ARTIFACT_PATH="./dist/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
-
           elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
             gradle build
             ARTIFACT_PATH="./build/libs/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
-
           elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
             node -e "
-              const fs = require('fs');
-              const path = require('path');
-              const packageJsonPath = path.join(process.cwd(), 'package.json');
-              const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+            const fs = require('fs');
+            const path = require('path');
+            const packageJsonPath = path.join(process.cwd(), 'package.json');
+            const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
-              packageJson.name = process.env.PACKAGE_ID || 'default-package-id';
-              packageJson.version = process.env.PACKAGE_VERSION || '0.1.0';
-              fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-              console.log('Updated package.json with name:', packageJson.name, 'and version:', packageJson.version);
+            
+            packageJson.name = process.env.PACKAGE_ID || 'default-package-id';
+            packageJson.version = process.env.PACKAGE_VERSION || '0.1.0';
+
+            fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+            console.log('Updated package.json with name:', packageJson.name, 'and version:', packageJson.version);
             "
             npm run build
-
             tar -czvf "./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz" -C build .
             ARTIFACT_PATH="./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
           fi
-
           echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
 
+   
       - name: Upload Package as Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: packaged-artifact
+          name: nuget-package
           path: ${{ env.ARTIFACT_PATH }}
