@@ -74,10 +74,24 @@ jobs:
             tar --ignore-failed-read -czvf "./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz" -C temp_build_dir .
             ARTIFACT_PATH="./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
           elif [[ "${{ inputs.LANGUAGE }}" == "node" ]]; then
-            npm pack
-            ARTIFACT_PATH="./${PACKAGE_ID}-${PACKAGE_VERSION}.tgz"
+            node -e "
+                const fs = require('fs');
+                const path = require('path');
+                const packageJsonPath = path.join(process.cwd(), 'package.json');
+                const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+                packageJson.name = process.env.PACKAGE_ID || 'default-package-id';
+                packageJson.version = process.env.PACKAGE_VERSION || '0.1.0';
+
+                fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+                console.log('Updated package.json with name:', packageJson.name, 'and version:', packageJson.version);
+                "
+
+                npm pack
+                ARTIFACT_PATH="./${PACKAGE_ID}-${PACKAGE_VERSION}.tgz"
           fi
           echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
+
           
 
    
