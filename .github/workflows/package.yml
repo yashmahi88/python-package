@@ -58,7 +58,7 @@ jobs:
           elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
             gradle build
             ARTIFACT_PATH="./build/libs/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
-          elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
+          elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "node" ]]; then
             node -e "
             const fs = require('fs');
             const path = require('path');
