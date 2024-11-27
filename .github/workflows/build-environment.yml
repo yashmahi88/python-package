@@ -89,7 +89,7 @@ jobs:
               python setup.py install
             elif [[ "${{ inputs.LANGUAGE }}" == "kotlin" ]]; then
               gradle build
-            elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
+            elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "node" ]]; then
               npm run build
             fi
 
