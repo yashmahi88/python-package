@@ -73,7 +73,8 @@ jobs:
             console.log('Updated package.json with name:', packageJson.name, 'and version:', packageJson.version);
             "
             npm run build
-            tar -czvf "./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz" -C build .
+            sync
+            tar --exclude="./node_modules" --exclude="./.*" --ignore-failed-read -czvf "./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz" -C build .
             ARTIFACT_PATH="./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
           fi
           echo "ARTIFACT_PATH=${ARTIFACT_PATH}" >> $GITHUB_ENV
