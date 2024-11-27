@@ -59,6 +59,19 @@ jobs:
             gradle build
             ARTIFACT_PATH="./build/libs/${PACKAGE_ID}-${PACKAGE_VERSION}.jar"
           elif [[ "${{ inputs.LANGUAGE }}" == "react" || "${{ inputs.LANGUAGE }}" == "javascript" ]]; then
+            node -e "
+            const fs = require('fs');
+            const path = require('path');
+            const packageJsonPath = path.join(process.cwd(), 'package.json');
+            const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+
+            // Dynamically set the name and version
+            packageJson.name = process.env.PACKAGE_ID || 'default-package-id';
+            packageJson.version = process.env.PACKAGE_VERSION || '0.1.0';
+
+            fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+            console.log('Updated package.json with name:', packageJson.name, 'and version:', packageJson.version);
+            "
             npm run build
             ARTIFACT_PATH="./build/${PACKAGE_ID}-${PACKAGE_VERSION}.tar.gz"
           fi
