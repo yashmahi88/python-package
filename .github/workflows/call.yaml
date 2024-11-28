@@ -21,7 +21,7 @@ jobs:
   call_push_to_nexus:
     needs: call_package_and_upload
     uses: yashmahi88/.github/.github/workflows/push-nexus.yml@main
-    with:
+    env:
       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
       NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
