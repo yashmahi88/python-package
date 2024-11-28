@@ -18,17 +18,8 @@ jobs:
     with:
       LANGUAGE: ${{ vars.LANGUAGE }}
 
-  debug_secrets:
-    runs-on: ubuntu-latest
+  call_push_to_nexus:
     needs: call_package_and_upload
-    steps:
-      - name: Debug Secrets
-        run: |
-          echo "NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}"
-          echo "NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}"
-
-#   call_push_to_nexus:
-#     needs: call_package_and_upload
-#     uses: yashmahi88/.github/.github/workflows/push-nexus.yml@main
-#     with:
-#       secrets: inherit
+    uses: yashmahi88/.github/.github/workflows/push-nexus.yml@main
+    with:
+      secrets: inherit
