@@ -27,8 +27,8 @@ jobs:
           echo "NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}"
           echo "NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}"
 
-  call_push_to_nexus:
-    needs: call_package_and_upload
-    uses: yashmahi88/.github/.github/workflows/push-nexus.yml@main
-    with:
-      secrets: inherit
+#   call_push_to_nexus:
+#     needs: call_package_and_upload
+#     uses: yashmahi88/.github/.github/workflows/push-nexus.yml@main
+#     with:
+#       secrets: inherit
