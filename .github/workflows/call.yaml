@@ -18,7 +18,7 @@ jobs:
     with:
       LANGUAGE: ${{ vars.LANGUAGE }}
 
-  call_push_to_nexus:
+  call_push_to_nexus: 
     needs: call_package_and_upload
     uses: yashmahi88/.github/.github/workflows/push-nexus.yml@main
     with:
