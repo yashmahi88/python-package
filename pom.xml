@@ -5,8 +5,8 @@
 
     <!-- Set static values for artifactId and version -->
     <groupId>com.example</groupId>
-    <artifactId>${PACKAGE_ID}</artifactId>
-    <version>${PACKAGE_VERSION}</version>
+    <artifactId>${package.id}</artifactId>
+    <version>${package.version}</version>
 
     <properties>
         <!-- Set Java version for compilation -->
@@ -14,8 +14,8 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         
         <!-- Define variables for package ID and version -->
-        <PACKAGE_ID>nexus-git</PACKAGE_ID>
-        <PACKAGE_VERSION>1.0.0</PACKAGE_VERSION>
+        <PACKAGE_ID>${PACKAGE_ID}</PACKAGE_ID>
+        <PACKAGE_VERSION>${PACKAGE_VERSION}</PACKAGE_VERSION>
     </properties>
 
     <dependencies>
