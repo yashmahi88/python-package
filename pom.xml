@@ -14,7 +14,7 @@
         <PACKAGE_ID>${PACKAGE_ID}</PACKAGE_ID>
         <PACKAGE_VERSION>${PACKAGE_VERSION}</PACKAGE_VERSION>
         <artifactName>${project.artifactId}-${project.version}.jar</artifactName>
-        <artifactPath>${artifact.path}</artifactPath> <!-- New property for artifact path -->
+        <artifactPath>./artifact/*.jar</artifactPath> <!-- New property for artifact path -->
     </properties>
 
     <dependencies>
@@ -43,7 +43,7 @@
                             <goal>deploy-file</goal>
                         </goals>
                         <configuration>
-                            <file>${artifactPath}</file> <!-- Use the artifact path property -->
+                            <file>./artifact/*.jar</file> <!-- Use the artifact path property -->
                             <repositoryId>nexus</repositoryId>
                             <url>${NEXUS_URL}</url>
                             <username>${NEXUS_USERNAME}</username>
