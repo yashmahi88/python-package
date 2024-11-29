@@ -3,19 +3,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Set static values for artifactId and version -->
     <groupId>com.example</groupId>
     <artifactId>${package.id}</artifactId>
     <version>${package.version}</version>
 
     <properties>
-        <!-- Set Java version for compilation -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        
-        <!-- Define variables for package ID and version -->
+
         <PACKAGE_ID>${PACKAGE_ID}</PACKAGE_ID>
         <PACKAGE_VERSION>${PACKAGE_VERSION}</PACKAGE_VERSION>
+        <artifactName>${project.artifactId}-${project.version}.jar</artifactName>
+        <artifactPath>${artifact.path}</artifactPath> <!-- New property for artifact path -->
     </properties>
 
     <dependencies>
@@ -24,7 +23,6 @@
 
     <build>
         <plugins>
-            <!-- Maven Compiler Plugin for Java compilation -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -35,7 +33,6 @@
                 </configuration>
             </plugin>
             
-            <!-- Maven Deploy Plugin to deploy the .jar file to Nexus -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -46,7 +43,7 @@
                             <goal>deploy-file</goal>
                         </goals>
                         <configuration>
-                            <file>${project.build.directory}/${project.build.finalName}.jar</file>
+                            <file>${artifactPath}</file> <!-- Use the artifact path property -->
                             <repositoryId>nexus</repositoryId>
                             <url>${NEXUS_URL}</url>
                             <username>${NEXUS_USERNAME}</username>
