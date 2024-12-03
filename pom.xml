@@ -4,17 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>${package.id}</artifactId>
-    <version>${package.version}</version>
+    <artifactId>${env.PACKAGE_ID}</artifactId> <!-- Use the environment variable for artifactId -->
+    <version>${env.PACKAGE_VERSION}</version> <!-- Use the environment variable for version -->
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-
-        <PACKAGE_ID>${PACKAGE_ID}</PACKAGE_ID>
-        <PACKAGE_VERSION>${PACKAGE_VERSION}</PACKAGE_VERSION>
-        <artifactName>${project.artifactId}-${project.version}.jar</artifactName>
-        <artifactPath>./artifact/*.jar</artifactPath> <!-- New property for artifact path -->
+        <artifactPath>./artifact/*.jar</artifactPath> <!-- Path to the artifact -->
     </properties>
 
     <dependencies>
@@ -43,14 +39,14 @@
                             <goal>deploy-file</goal>
                         </goals>
                         <configuration>
-                            <file>./artifact/*.jar</file> <!-- Use the artifact path property -->
+                            <file>${artifactPath}</file> 
                             <repositoryId>nexus</repositoryId>
-                            <url>${NEXUS_URL}</url>
-                            <username>${NEXUS_USERNAME}</username>
-                            <password>${NEXUS_PASSWORD}</password>
-                            <groupId>${groupId}</groupId>
-                            <artifactId>${artifactId}</artifactId>
-                            <version>${version}</version>
+                            <url>${NEXUS_SOURCE}</url> 
+                            <username>${env.NEXUS_USERNAME}</username> 
+                            <password>${env.NEXUS_PASSWORD}</password> 
+                            <groupId>com.example</groupId>
+                            <artifactId>${env.PACKAGE_ID}</artifactId> 
+                            <version>${env.PACKAGE_VERSION}</version> 
                             <packaging>jar</packaging>
                         </configuration>
                     </execution>
@@ -58,4 +54,4 @@
             </plugin>
         </plugins>
     </build>
-</project> 
+</project>
