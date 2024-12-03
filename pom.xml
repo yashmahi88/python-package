@@ -4,45 +4,56 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>${project.artifactId}</artifactId> <!-- Placeholder -->
+    <artifactId>${package.id}</artifactId> <!-- Placeholder -->
     <version>${project.version}</version> <!-- Placeholder -->
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <artifactPath>./artifact/*.jar</artifactPath>
-        <nexus.url>${env.NEXUS_SOURCE}</nexus.url> <!-- Placeholder for URL -->
+         <PACKAGE_ID>${PACKAGE_ID}</PACKAGE_ID>
+        <PACKAGE_VERSION>${PACKAGE_VERSION}</PACKAGE_VERSION>
+        <artifactName>${project.artifactId}-${project.version}.jar</artifactName>
+        <artifactPath>./artifact/*.jar</artifactPath> <!-- Placeholder for URL -->
     </properties>
 
     <dependencies>
         <!-- Add any dependencies here -->
     </dependencies>
  
-    <build>
-        <plugins> 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.7</version> 
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>deploy-file</goal>
-                        </goals>
-                        <configuration>
-                            <file>${artifactPath}</file> 
-                            <repositoryId>nexus</repositoryId>
-                            <url>${nexus.url}</url> 
-                            <username>${nexus.username}</username> <!-- Placeholder -->
-                            <password>${nexus.password}</password> <!-- Placeholder -->
-                            <groupId>com.example</groupId>
-                            <artifactId>${project.artifactId}</artifactId> 
-                            <version>${project.version}</version> 
-                            <packaging>jar</packaging>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-</project>
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>3.8.1</version>
+            <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+            </configuration>
+        </plugin> 
+       
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-deploy-plugin</artifactId>
+            <version>2.7</version> 
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>deploy-file</goal>
+                    </goals>
+                    <configuration>
+                        <file>./artifact/*.jar</file> <!-- Use the artifact path property -->
+                        <repositoryId>nexus</repositoryId>
+                        <url>${NEXUS_URL}</url>
+                        <username>${NEXUS_USERNAME}</username>
+                        <password>${NEXUS_PASSWORD}</password>
+                        <groupId>${groupId}</groupId>
+                        <artifactId>${artifactId}</artifactId>
+                        <version>${version}</version>
+                        <packaging>jar</packaging>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+    </plugins>
+</build>
