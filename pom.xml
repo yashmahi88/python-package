@@ -11,7 +11,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <PACKAGE_ID>${PACKAGE_ID}</PACKAGE_ID>
+        <PACKAGE_ID>${PACKAGE_ID}</PACKAGE_ID> 
         <PACKAGE_VERSION>${PACKAGE_VERSION}</PACKAGE_VERSION>
         <artifactName>${project.artifactId}-${project.version}.jar</artifactName>
         <artifactPath>./artifact/*.jar</artifactPath> <!-- New property for artifact path -->
