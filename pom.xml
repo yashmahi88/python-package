@@ -4,22 +4,23 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.example</groupId>
-    <artifactId>${package.id}</artifactId> <!-- Placeholder -->
-    <version>${project.version}</version> <!-- Placeholder -->
+    <artifactId>${package.id}</artifactId>
+    <version>${package.version}</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <package.id>${PACKAGE_ID}</package.id>
-        <package.version>${PACKAGE_VERSION}</package.version>
+
+        <PACKAGE_ID>${PACKAGE_ID}</PACKAGE_ID>
+        <PACKAGE_VERSION>${PACKAGE_VERSION}</PACKAGE_VERSION>
         <artifactName>${project.artifactId}-${project.version}.jar</artifactName>
-        <artifactPath>./artifact/*.jar</artifactPath> <!-- Placeholder for URL -->
+        <artifactPath>./artifact/*.jar</artifactPath> <!-- New property for artifact path -->
     </properties>
 
     <dependencies>
         <!-- Add any dependencies here -->
     </dependencies>
-
+ 
     <build>
         <plugins>
             <plugin>
@@ -30,19 +31,19 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
-            </plugin>
-
+            </plugin> 
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.7</version>
+                <version>2.7</version> 
                 <executions>
                     <execution>
                         <goals>
                             <goal>deploy-file</goal>
                         </goals>
                         <configuration>
-                            <file>${artifactPath}</file> <!-- Updated to use property -->
+                            <file>./artifact/*.jar</file> <!-- Use the artifact path property -->
                             <repositoryId>nexus</repositoryId>
                             <url>${NEXUS_URL}</url>
                             <username>${NEXUS_USERNAME}</username>
@@ -57,4 +58,4 @@
             </plugin>
         </plugins>
     </build>
-</project>
+</project> 
