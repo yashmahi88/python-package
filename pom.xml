@@ -41,7 +41,7 @@
                     <execution>
                         <goals>
                             <goal>deploy-file</goal>
-                        </goals>
+                        </goals> 
                         <configuration>
                             <file>./artifact/*.jar</file> <!-- Use the artifact path property -->
                             <repositoryId>nexus</repositoryId>
