@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - development
-      - release
+      - release 
 
 jobs:
   call_setup_and_build:
