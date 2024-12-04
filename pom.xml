@@ -45,7 +45,7 @@
                         <configuration>
                             <file>./artifact/*.jar</file> <!-- Use the artifact path property -->
                             <repositoryId>nexus</repositoryId>
-                            <url>${NEXUS_URL}</url>
+                            <url>${NEXUS_SOURCE}</url>
                             <username>${NEXUS_USERNAME}</username>
                             <password>${NEXUS_PASSWORD}</password>
                             <groupId>${groupId}</groupId>
