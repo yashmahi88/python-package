@@ -42,7 +42,7 @@
                         <goals>
                             <goal>deploy-file</goal>
                         </goals> 
-                        <configuration>
+                        <configuration> 
                             <file>./artifact/*.jar</file> <!-- Use the artifact path property -->
                             <repositoryId>nexus</repositoryId>
                             <url>${NEXUS_SOURCE}</url>
