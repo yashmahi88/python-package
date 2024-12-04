@@ -54,7 +54,7 @@
                             <packaging>jar</packaging>
                         </configuration>
                     </execution>
-                </executions>
+                </executions> 
             </plugin>
         </plugins>
     </build>
