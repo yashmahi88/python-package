@@ -17,7 +17,7 @@
         <artifactPath>./artifact/*.jar</artifactPath> <!-- New property for artifact path -->
     </properties>
 
-    <dependencies> 
+    <dependencies>
         <!-- Add any dependencies here -->
     </dependencies>
  
