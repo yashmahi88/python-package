@@ -16,7 +16,7 @@ jobs:
     needs: call_setup_and_build
     uses: yashmahi88/.github/.github/workflows/publish-package.yml@main
     with:
-      LANGUAGE: ${{ vars.LANGUAGE }}
+      LANGUAGE: ${{ vars.LANGUAGE }} 
 
   call_sonar_scan:
     needs: call_package_and_upload
