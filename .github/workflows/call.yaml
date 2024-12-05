@@ -33,7 +33,7 @@ jobs:
     needs: call_sonar_scan   # call_package_and_upload  call_sonar_scan 
     uses: yashmahi88/.github/.github/workflows/push-nexus.yml@main
     with:
-      LANGUAGE: ${{ vars.LANGUAGE }} 
+      LANGUAGE: ${{ vars.LANGUAGE }}
     secrets: 
       NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }} 
       NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
